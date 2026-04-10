@@ -7,6 +7,7 @@ import type { DisposalTicket, AuditLog } from "@/lib/supabase/types";
 import { ASSET_CONDITIONS, DISPOSAL_METHODS } from "@/lib/constants";
 import { formatDateTime } from "@/lib/utils";
 import StatusBadge from "@/components/StatusBadge";
+import TicketActions from "@/components/TicketActions";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -173,6 +174,9 @@ export default async function TicketDetailPage({ params }: PageProps) {
           </div>
         )}
       </div>
+
+      {/* Pelaksanaan Pelupusan */}
+      <TicketActions ticket={ticket} />
 
       {/* Jejak Audit Card */}
       <div className="rounded-2xl bg-white p-5 shadow-sm">
