@@ -34,7 +34,7 @@ function generateCertPdf(ticket: DisposalTicket, officerName: string): Blob {
   const row = ticket as TicketRow;
 
   const ticketNo =
-    (row.ticket_no as string | undefined) ?? ticket.ticket_number ?? ticket.id;
+    (row.ticket_no as string | undefined) ?? ticket.ticket_no ?? ticket.id;
   const inventoryId = (row.inventory_id as string | undefined) ?? "-";
   const location = (row.location as string | undefined) ?? "-";
   const completedAt =
@@ -150,7 +150,7 @@ export default function CertificateGenerator({ ticket, officerName }: Props) {
       // 6. Insert audit_log
       const { error: logError } = await supabase.from("audit_logs").insert({
         ticket_id: ticket.id,
-        actor_id: user?.id ?? null,
+        performed_by: user?.id ?? null,
         action: "sijil_dijana",
         new_value: publicUrl,
       });

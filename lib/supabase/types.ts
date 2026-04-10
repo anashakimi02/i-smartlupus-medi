@@ -21,29 +21,31 @@ export interface Profile {
 
 export interface DisposalTicket {
   id: string;
-  ticket_number: string;
-  user_id: string;
+  ticket_no: string;
   asset_name: string;
-  asset_description: string | null;
+  inventory_id: string | null;
   asset_condition: AssetCondition;
-  quantity: number;
-  unit_name: string;
-  disposal_method: DisposalMethod | null;
+  location: string | null;
   status: TicketStatus;
+  disposal_method: DisposalMethod | null;
   rejection_reason: string | null;
+  image_url: string | null;
+  cert_url: string | null;
+  created_by: string;
   reviewed_by: string | null;
-  reviewed_at: string | null;
+  completed_by: string | null;
   created_at: string;
+  reviewed_at: string | null;
+  completed_at: string | null;
   updated_at: string;
 }
 
 export interface AuditLog {
   id: string;
   ticket_id: string;
-  actor_id: string;
   action: string;
-  from_status: TicketStatus | null;
-  to_status: TicketStatus | null;
-  notes: string | null;
+  old_value: string | null;
+  new_value: string;
+  performed_by: string;
   created_at: string;
 }

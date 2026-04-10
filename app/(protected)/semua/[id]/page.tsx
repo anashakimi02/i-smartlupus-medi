@@ -56,7 +56,7 @@ export default async function TicketDetailPage({ params }: PageProps) {
         </Link>
         <div className="flex flex-1 items-center gap-3">
           <span className="text-lg font-black text-slate-900">
-            {(ticket as unknown as Record<string, unknown>).ticket_no as string ?? ticket.ticket_number ?? id.slice(0, 8).toUpperCase()}
+            {ticket.ticket_no}
           </span>
           <StatusBadge status={ticket.status} />
         </div>
@@ -85,7 +85,7 @@ export default async function TicketDetailPage({ params }: PageProps) {
               No. Inventori
             </p>
             <p className="mt-0.5 text-sm font-semibold text-slate-800">
-              {(ticket as unknown as Record<string, unknown>).inventory_id as string || "-"}
+              {ticket.inventory_id || "-"}
             </p>
           </div>
 
@@ -105,7 +105,7 @@ export default async function TicketDetailPage({ params }: PageProps) {
               Lokasi
             </p>
             <p className="mt-0.5 text-sm font-semibold text-slate-800">
-              {(ticket as unknown as Record<string, unknown>).location as string || "-"}
+              {ticket.location || "-"}
             </p>
           </div>
 
@@ -143,7 +143,7 @@ export default async function TicketDetailPage({ params }: PageProps) {
         )}
 
         {/* Foto Aset */}
-        {(ticket as unknown as Record<string, unknown>).image_url && (
+        {ticket.image_url && (
           <div className="mt-4">
             <div className="mb-2 flex items-center gap-1.5">
               <Camera size={14} className="text-slate-400" />
@@ -152,7 +152,7 @@ export default async function TicketDetailPage({ params }: PageProps) {
               </p>
             </div>
             <img
-              src={(ticket as unknown as Record<string, unknown>).image_url as string}
+              src={ticket.image_url as string}
               alt="Foto aset"
               className="w-full rounded-xl object-cover"
             />
@@ -160,10 +160,10 @@ export default async function TicketDetailPage({ params }: PageProps) {
         )}
 
         {/* Muat Turun Sijil */}
-        {(ticket as unknown as Record<string, unknown>).cert_url && (
+        {ticket.cert_url && (
           <div className="mt-4">
             <a
-              href={(ticket as unknown as Record<string, unknown>).cert_url as string}
+              href={ticket.cert_url as string}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-700 hover:bg-blue-100 transition-colors"
@@ -189,9 +189,6 @@ export default async function TicketDetailPage({ params }: PageProps) {
         ) : (
           <div className="space-y-4">
             {logs.map((log) => {
-              const rawLog = log as unknown as Record<string, unknown>;
-              const oldValue = rawLog.old_value as string | null | undefined;
-              const newValue = rawLog.new_value as string | null | undefined;
               const actionLabel = log.action.replace(/_/g, " ");
 
               return (
@@ -206,11 +203,11 @@ export default async function TicketDetailPage({ params }: PageProps) {
                     <p className="text-sm font-semibold capitalize text-slate-800">
                       {actionLabel}
                     </p>
-                    {oldValue && (
+                    {log.old_value && (
                       <p className="mt-0.5 text-xs text-slate-500">
-                        <span className="line-through">{oldValue}</span>
+                        <span className="line-through">{log.old_value}</span>
                         {" → "}
-                        <span>{newValue ?? "-"}</span>
+                        <span>{log.new_value ?? "-"}</span>
                       </p>
                     )}
                     <p className="mt-0.5 text-[10px] text-slate-400">

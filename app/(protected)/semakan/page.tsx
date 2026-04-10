@@ -57,14 +57,14 @@ export default function SemakanPage() {
 
     await supabase.from("audit_logs").insert({
       ticket_id: ticket.id,
-      actor_id: user.id,
+      performed_by: user.id,
       action: "semakan_lulus",
-      from_status: "menunggu_semakan",
-      to_status: "proses_pelupusan",
+      old_value: "menunggu_semakan",
+      new_value: "proses_pelupusan",
       notes: null,
     });
 
-    toast.success(`${ticket.ticket_number} telah diluluskan.`);
+    toast.success(`${ticket.ticket_no} telah diluluskan.`);
     await loadTickets();
   }
 
@@ -100,10 +100,10 @@ export default function SemakanPage() {
 
     await supabase.from("audit_logs").insert({
       ticket_id: ticketId,
-      actor_id: user.id,
+      performed_by: user.id,
       action: "semakan_ditolak",
-      from_status: "menunggu_semakan",
-      to_status: "ditolak",
+      old_value: "menunggu_semakan",
+      new_value: "ditolak",
       notes: rejectReason.trim(),
     });
 
@@ -149,7 +149,7 @@ export default function SemakanPage() {
               {/* Top row: ticket number + status badge */}
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">
-                  {ticket.ticket_number}
+                  {ticket.ticket_no}
                 </span>
                 <StatusBadge status={ticket.status} />
               </div>
@@ -163,7 +163,7 @@ export default function SemakanPage() {
               <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-400">
                 <span>{ASSET_CONDITIONS[ticket.asset_condition]}</span>
                 <span>·</span>
-                <span>{ticket.unit_name}</span>
+                <span>{ticket.location}</span>
                 <span>·</span>
                 <span>{formatDate(ticket.created_at)}</span>
               </div>

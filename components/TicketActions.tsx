@@ -57,12 +57,12 @@ export default function TicketActions({ ticket }: Props) {
         (ticket as unknown as Record<string, unknown>).ticket_no as
           | string
           | undefined;
-      const ticketRef = ticketNo ?? ticket.ticket_number ?? ticket.id;
+      const ticketRef = ticketNo ?? ticket.ticket_no ?? ticket.id;
 
       // Insert audit log: kaedah_dipilih
       const { error: log1Error } = await supabase.from("audit_logs").insert({
         ticket_id: ticket.id,
-        actor_id: user.id,
+        performed_by: user.id,
         action: "kaedah_dipilih",
         new_value: method,
       });
@@ -72,7 +72,7 @@ export default function TicketActions({ ticket }: Props) {
       // Insert audit log: pelupusan_selesai
       const { error: log2Error } = await supabase.from("audit_logs").insert({
         ticket_id: ticket.id,
-        actor_id: user.id,
+        performed_by: user.id,
         action: "pelupusan_selesai",
         old_value: "proses_pelupusan",
         new_value: "selesai",

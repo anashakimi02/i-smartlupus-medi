@@ -45,9 +45,9 @@ export default function SemuaPage() {
     const query = search.toLowerCase();
     const matchesSearch =
       !query ||
-      ticket.ticket_number.toLowerCase().includes(query) ||
+      ticket.ticket_no.toLowerCase().includes(query) ||
       ticket.asset_name.toLowerCase().includes(query) ||
-      ticket.unit_name.toLowerCase().includes(query);
+      (ticket.location || "").toLowerCase().includes(query);
 
     return matchesStatus && matchesSearch;
   });

@@ -17,7 +17,7 @@ export default function TicketCard({ ticket }: TicketCardProps) {
           {/* Ticket number + status */}
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">
-              {ticket.ticket_number}
+              {ticket.ticket_no}
             </span>
             <StatusBadge status={ticket.status} />
           </div>
@@ -29,7 +29,7 @@ export default function TicketCard({ ticket }: TicketCardProps) {
 
           {/* Unit / location */}
           <p className="text-xs text-slate-400 mt-0.5 truncate">
-            {ticket.unit_name}
+            {ticket.location}
           </p>
 
           {/* Created date */}
