@@ -3,11 +3,26 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Blue-tinted surfaces instead of pure gray */
+    --background: oklch(0.975 0.005 250);
+    --foreground: oklch(0.15 0.008 250);
+    --surface: oklch(1.00 0.003 250);
+    --surface-raised: oklch(1.00 0.003 250);
+    --border: oklch(0.90 0.01 250);
+    --text-muted: oklch(0.55 0.01 250);
+  }
+
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-kerning: normal;
     text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
   }
 
   /* Tabular numbers for data/stats */
