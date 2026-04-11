@@ -127,7 +127,7 @@ export default function PenggunaPage() {
         </div>
         <button
           onClick={() => setShowForm((prev) => !prev)}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-3 rounded-xl transition-colors"
         >
           <UserPlus size={16} />
           Daftar Baru
@@ -155,7 +155,7 @@ export default function PenggunaPage() {
                   setIcNumber(e.target.value.replace(/\D/g, "").slice(0, 12))
                 }
                 placeholder="cth. 901231071234"
-                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -170,7 +170,7 @@ export default function PenggunaPage() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="cth. Ahmad bin Ali"
-                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -183,7 +183,7 @@ export default function PenggunaPage() {
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value as UserRole)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 required
               >
                 {ROLE_OPTIONS.map((opt) => (
@@ -204,7 +204,7 @@ export default function PenggunaPage() {
                 value={unitName}
                 onChange={(e) => setUnitName(e.target.value)}
                 placeholder="cth. Unit Aset Tetap"
-                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -219,7 +219,7 @@ export default function PenggunaPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Minimum 6 aksara"
                 minLength={6}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -229,7 +229,7 @@ export default function PenggunaPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-semibold py-2 rounded-xl transition-colors"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-semibold py-3 rounded-xl transition-colors"
               >
                 {submitting ? "Mendaftar..." : "Daftar Pengguna"}
               </button>

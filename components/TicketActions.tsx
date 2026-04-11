@@ -107,7 +107,7 @@ export default function TicketActions({ ticket }: Props) {
                 type="button"
                 onClick={() => setMethod(key)}
                 className={[
-                  "rounded-xl border px-3 py-2.5 text-sm font-semibold transition-colors",
+                  "rounded-xl border px-4 py-3 text-sm font-semibold transition-colors",
                   isActive
                     ? "bg-blue-600 text-white border-blue-600"
                     : "bg-white text-slate-600 border-slate-200 hover:border-blue-300",

@@ -184,13 +184,13 @@ export default function SemakanPage() {
                         setRejectId(null);
                         setRejectReason("");
                       }}
-                      className="flex-1 rounded-xl border border-slate-200 bg-white py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+                      className="flex-1 rounded-xl border border-slate-200 bg-white py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
                     >
                       Batal
                     </button>
                     <button
                       onClick={() => handleTolak(ticket.id)}
-                      className="flex-1 rounded-xl bg-red-50 py-2 text-xs font-semibold text-red-600 hover:bg-red-100 transition-colors flex items-center justify-center gap-1"
+                      className="flex-1 rounded-xl bg-red-50 py-3 text-sm font-semibold text-red-600 hover:bg-red-100 transition-colors flex items-center justify-center gap-1"
                     >
                       <X size={13} />
                       Tolak
@@ -204,7 +204,7 @@ export default function SemakanPage() {
                 <div className="flex gap-2 pt-1">
                   <button
                     onClick={() => handleLulus(ticket)}
-                    className="flex-1 rounded-xl bg-green-600 py-2 text-xs font-semibold text-white hover:bg-green-700 transition-colors flex items-center justify-center gap-1"
+                    className="flex-1 rounded-xl bg-green-600 py-3 text-sm font-semibold text-white hover:bg-green-700 transition-colors flex items-center justify-center gap-1"
                   >
                     <Check size={13} />
                     Lulus
@@ -214,7 +214,7 @@ export default function SemakanPage() {
                       setRejectId(ticket.id);
                       setRejectReason("");
                     }}
-                    className="flex-1 rounded-xl bg-red-50 py-2 text-xs font-semibold text-red-600 hover:bg-red-100 transition-colors flex items-center justify-center gap-1"
+                    className="flex-1 rounded-xl bg-red-50 py-3 text-sm font-semibold text-red-600 hover:bg-red-100 transition-colors flex items-center justify-center gap-1"
                   >
                     <X size={13} />
                     Tolak

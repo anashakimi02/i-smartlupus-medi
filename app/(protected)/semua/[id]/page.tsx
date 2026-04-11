@@ -52,7 +52,7 @@ export default function TicketDetailPage() {
       <div className="flex items-center gap-3">
         <Link
           href="/semua"
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors"
+          className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-colors"
         >
           <ArrowLeft size={18} />
         </Link>

@@ -82,7 +82,7 @@ export default function PhotoUpload({ ticketId, onUploaded }: PhotoUploadProps) 
           <button
             type="button"
             onClick={handleRemove}
-            className="absolute top-2 right-2 bg-white rounded-full p-1 shadow"
+            className="absolute top-2 right-2 bg-white rounded-full p-2.5 shadow-md"
             aria-label="Buang gambar"
           >
             <X className="h-4 w-4 text-gray-700" />

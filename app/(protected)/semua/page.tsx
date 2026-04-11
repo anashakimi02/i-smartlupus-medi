@@ -86,7 +86,7 @@ export default function SemuaPage() {
               key={option.value}
               onClick={() => setStatusFilter(option.value)}
               className={cn(
-                "shrink-0 rounded-full px-4 py-1.5 text-sm font-medium border transition-colors",
+                "shrink-0 rounded-full px-5 py-2.5 text-sm font-medium border transition-colors",
                 isActive
                   ? "bg-blue-600 text-white border-blue-600"
                   : "bg-white text-slate-600 border-slate-200 hover:border-blue-300"
