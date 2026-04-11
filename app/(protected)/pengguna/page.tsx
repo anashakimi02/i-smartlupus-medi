@@ -143,10 +143,11 @@ export default function PenggunaPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* IC Number */}
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">
+              <label htmlFor="reg-ic" className="block text-xs font-semibold text-slate-600 mb-1">
                 No. Kad Pengenalan <span className="text-red-500">*</span>
               </label>
               <input
+                id="reg-ic"
                 type="text"
                 inputMode="numeric"
                 maxLength={12}
@@ -162,10 +163,11 @@ export default function PenggunaPage() {
 
             {/* Full Name */}
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">
+              <label htmlFor="reg-name" className="block text-xs font-semibold text-slate-600 mb-1">
                 Nama Penuh <span className="text-red-500">*</span>
               </label>
               <input
+                id="reg-name"
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -177,10 +179,11 @@ export default function PenggunaPage() {
 
             {/* Role */}
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">
+              <label htmlFor="reg-role" className="block text-xs font-semibold text-slate-600 mb-1">
                 Peranan <span className="text-red-500">*</span>
               </label>
               <select
+                id="reg-role"
                 value={role}
                 onChange={(e) => setRole(e.target.value as UserRole)}
                 className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
@@ -196,10 +199,11 @@ export default function PenggunaPage() {
 
             {/* Unit / Jabatan */}
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">
+              <label htmlFor="reg-unit" className="block text-xs font-semibold text-slate-600 mb-1">
                 Unit / Jabatan
               </label>
               <input
+                id="reg-unit"
                 type="text"
                 value={unitName}
                 onChange={(e) => setUnitName(e.target.value)}
@@ -210,10 +214,11 @@ export default function PenggunaPage() {
 
             {/* Password */}
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">
+              <label htmlFor="reg-password" className="block text-xs font-semibold text-slate-600 mb-1">
                 Kata Laluan <span className="text-red-500">*</span>
               </label>
               <input
+                id="reg-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

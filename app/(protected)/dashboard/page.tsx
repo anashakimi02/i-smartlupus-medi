@@ -50,7 +50,7 @@ export default function DashboardPage() {
     load();
   }, []);
 
-  if (!profile) return <DashboardSkeleton />;
+  if (!profile) return <div role="status"><DashboardSkeleton /><span className="sr-only">Memuatkan papan pemuka...</span></div>;
 
   return (
     <div>
