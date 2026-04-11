@@ -25,8 +25,36 @@
     color: var(--foreground);
   }
 
-  /* Tabular numbers for data/stats */
   .tabular-nums {
     font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer utilities {
+  /* Gentle page entrance — professional, not flashy */
+  .animate-in {
+    animation: fade-up 0.3s ease-out both;
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Respect reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-in {
+      animation: none;
+      opacity: 1;
+    }
+    .animate-pulse {
+      animation: none;
+    }
   }
 }

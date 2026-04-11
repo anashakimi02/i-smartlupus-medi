@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, TicketStatus } from "@/lib/supabase/types";
 import StatCard from "@/components/StatCard";
+import { DashboardSkeleton } from "@/components/Skeleton";
 import { ClipboardList, Clock, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 
 const roleTitle: Record<Profile["role"], string> = {
@@ -49,7 +50,7 @@ export default function DashboardPage() {
     load();
   }, []);
 
-  if (!profile) return null;
+  if (!profile) return <DashboardSkeleton />;
 
   return (
     <div>
