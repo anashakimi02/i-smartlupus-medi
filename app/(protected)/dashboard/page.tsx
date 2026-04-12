@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, TicketStatus } from "@/lib/supabase/types";
 import StatCard from "@/components/StatCard";
+import StatusChart from "@/components/StatusChart";
 import { DashboardSkeleton } from "@/components/Skeleton";
 import { ClipboardList, Clock, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 
@@ -16,6 +17,13 @@ const roleTitle: Record<Profile["role"], string> = {
 export default function DashboardPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [counts, setCounts] = useState({ total: 0, menunggu_semakan: 0, proses_pelupusan: 0, selesai: 0, ditolak: 0 });
+
+  const chartData = [
+    { name: "Menunggu", value: counts.menunggu_semakan, color: "#eab308" },
+    { name: "Proses", value: counts.proses_pelupusan, color: "#f97316" },
+    { name: "Selesai", value: counts.selesai, color: "#22c55e" },
+    { name: "Ditolak", value: counts.ditolak, color: "#ef4444" },
+  ];
 
   useEffect(() => {
     async function load() {
@@ -63,6 +71,8 @@ export default function DashboardPage() {
           Selamat datang, {profile.full_name}
         </p>
       </div>
+
+      <StatusChart data={chartData} />
 
       {/* Stat cards — tighter gap between related items */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
