@@ -28,18 +28,18 @@ export default function StatCard({
   const c = colorMap[color];
 
   return (
-    <div className={cn("rounded-2xl p-5 transition-all", c.bg)}>
+    <div className={cn("rounded-xl p-5 transition-all", c.bg)}>
       <div className="flex items-center gap-4">
         <div
           className={cn(
-            "w-11 h-11 rounded-xl flex items-center justify-center shrink-0",
+            "w-11 h-11 rounded-lg flex items-center justify-center shrink-0",
             c.iconBg, c.icon,
           )}
         >
           {icon}
         </div>
         <div>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+          <p className="text-[11px] font-extrabold text-slate-600 uppercase tracking-wider">
             {label}
           </p>
           <p className={cn("text-2xl font-black tabular-nums", c.value)}>
