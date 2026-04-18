@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { DisposalTicket, Profile, TicketStatus } from "@/lib/supabase/types";
 import { ROLE_LABELS } from "@/lib/constants";
@@ -12,6 +14,11 @@ import { Stat } from "@/components/ui/stat";
 import { ClipboardList, Clock, RefreshCw, CheckCircle2 } from "lucide-react";
 import StatusChart from "@/components/StatusChart";
 import { useTheme } from "@/components/theme-provider";
+import { ListItem } from "@/components/ui/list-item";
+import { EmptyState } from "@/components/ui/empty-state";
+import { StatusChip } from "@/components/StatusChip";
+import { formatDate } from "@/lib/utils";
+import { Inbox } from "lucide-react";
 import { getGreeting } from "@/lib/greeting";
 
 type Role = Profile["role"];
@@ -90,6 +97,7 @@ export default function DashboardPage() {
   const [counts, setCounts] = useState<Counts>(emptyCounts);
   const [recent, setRecent] = useState<DisposalTicket[]>([]);
   const { resolvedTheme } = useTheme();
+  const router = useRouter();
 
   useEffect(() => {
     async function load() {
@@ -212,7 +220,55 @@ export default function DashboardPage() {
         </BentoCard>
       </div>
 
-      {/* Recent tickets lands in Task 9. Floating CTA lands in Task 10 */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-subhead font-semibold text-[var(--fg)]">Terkini</h2>
+          <Link
+            href="/semua"
+            className="text-footnote font-medium text-[var(--primary)] hover:underline"
+          >
+            Lihat semua →
+          </Link>
+        </div>
+
+        {recent.length === 0 ? (
+          <EmptyState
+            icon={<Inbox className="h-8 w-8" aria-hidden />}
+            title="Belum ada permohonan"
+            description={
+              profile.role === "user"
+                ? "Mohon pelupusan pertama anda untuk mula."
+                : "Tiada tiket setakat ini."
+            }
+          />
+        ) : (
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
+            {recent.map((t) => (
+              <ListItem
+                key={t.id}
+                onClick={() => router.push(`/semua/${t.id}`)}
+                title={
+                  <span className="flex items-center gap-2">
+                    <span className="text-caption font-semibold text-[var(--primary)] uppercase tracking-wide">
+                      {t.ticket_no}
+                    </span>
+                    <StatusChip status={t.status} />
+                  </span>
+                }
+                subtitle={
+                  <span className="flex items-center gap-1.5">
+                    <span className="truncate">{t.asset_name}</span>
+                    <span aria-hidden className="text-[var(--border-strong)]">·</span>
+                    <span>{formatDate(t.created_at)}</span>
+                  </span>
+                }
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Floating CTA lands in Task 10 */}
     </div>
   );
 }
