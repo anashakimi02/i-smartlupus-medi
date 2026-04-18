@@ -29,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ms" className={inter.variable}>
-      <body className="bg-slate-50 text-slate-900 antialiased font-sans">
+      <body className="antialiased font-sans" style={{ background: "var(--bg)", color: "var(--fg)" }}>
         {children}
         <Toaster position="top-center" richColors />
       </body>

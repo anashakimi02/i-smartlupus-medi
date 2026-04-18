@@ -4,13 +4,76 @@
 
 @layer base {
   :root {
-    /* Blue-tinted surfaces instead of pure gray */
-    --background: oklch(0.975 0.005 250);
-    --foreground: oklch(0.15 0.008 250);
-    --surface: oklch(1.00 0.003 250);
-    --surface-raised: oklch(1.00 0.003 250);
-    --border: oklch(0.90 0.01 250);
-    --text-muted: oklch(0.55 0.01 250);
+    /* Light theme (default) */
+    --bg: oklch(0.975 0.006 250);
+    --surface: oklch(1.000 0.003 250);
+    --surface-elevated: oklch(1.000 0.003 250);
+    --fg: oklch(0.200 0.008 250);
+    --fg-muted: oklch(0.530 0.010 250);
+    --border: oklch(0.910 0.010 250);
+
+    --primary: #2563EB;
+    --primary-hover: #1D4ED8;
+    --primary-tint: rgba(37, 99, 235, 0.08);
+    --on-primary: #FFFFFF;
+
+    --accent: #059669;
+    --on-accent: #FFFFFF;
+
+    --destructive: #DC2626;
+    --destructive-tint: rgba(220, 38, 38, 0.08);
+    --on-destructive: #FFFFFF;
+
+    --warning: #D97706;
+
+    --chip-pending-bg: #FEF3C7;
+    --chip-pending-fg: #92400E;
+    --chip-reviewing-bg: #DBEAFE;
+    --chip-reviewing-fg: #1E40AF;
+    --chip-executing-bg: #E0E7FF;
+    --chip-executing-fg: #3730A3;
+    --chip-done-bg: #D1FAE5;
+    --chip-done-fg: #065F46;
+    --chip-rejected-bg: #FEE2E2;
+    --chip-rejected-fg: #991B1B;
+
+    --ring: rgba(37, 99, 235, 0.5);
+  }
+
+  .dark {
+    --bg: oklch(0.130 0.006 250);
+    --surface: oklch(0.200 0.008 250);
+    --surface-elevated: oklch(0.280 0.010 250);
+    --fg: oklch(0.950 0.008 250);
+    --fg-muted: oklch(0.640 0.010 250);
+    --border: oklch(0.280 0.010 250);
+
+    --primary: #60A5FA;
+    --primary-hover: #3B82F6;
+    --primary-tint: rgba(96, 165, 250, 0.12);
+    --on-primary: #0F172A;
+
+    --accent: #34D399;
+    --on-accent: #0F172A;
+
+    --destructive: #F87171;
+    --destructive-tint: rgba(248, 113, 113, 0.12);
+    --on-destructive: #0F172A;
+
+    --warning: #FBBF24;
+
+    --chip-pending-bg: rgba(217, 119, 6, 0.15);
+    --chip-pending-fg: #FBBF24;
+    --chip-reviewing-bg: rgba(37, 99, 235, 0.18);
+    --chip-reviewing-fg: #93C5FD;
+    --chip-executing-bg: rgba(79, 70, 229, 0.20);
+    --chip-executing-fg: #A5B4FC;
+    --chip-done-bg: rgba(5, 150, 105, 0.18);
+    --chip-done-fg: #6EE7B7;
+    --chip-rejected-bg: rgba(220, 38, 38, 0.18);
+    --chip-rejected-fg: #FCA5A5;
+
+    --ring: rgba(96, 165, 250, 0.6);
   }
 
   html {
@@ -21,49 +84,60 @@
   }
 
   body {
-    background-color: var(--background);
-    color: var(--foreground);
+    background-color: var(--bg);
+    color: var(--fg);
   }
 
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
 
-  /* Consistent focus ring for keyboard navigation (accessibility) */
   :focus-visible {
-    outline: 2px solid oklch(0.55 0.18 250);
+    outline: 2px solid var(--ring);
     outline-offset: 2px;
     border-radius: 8px;
   }
 
-  /* Remove default focus for mouse users */
   :focus:not(:focus-visible) {
     outline: none;
   }
 }
 
 @layer utilities {
-  /* Gentle page entrance — professional, not flashy */
   .animate-in {
-    animation: fade-up 0.3s ease-out both;
+    animation: fade-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   @keyframes fade-up {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Respect reduced motion preference */
+  .animate-sheet-up {
+    animation: sheet-up 0.3s cubic-bezier(0.32, 0.72, 0, 1) both;
+  }
+
+  @keyframes sheet-up {
+    from { opacity: 0; transform: translateY(100%); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .animate-in {
+    .animate-in,
+    .animate-sheet-up,
+    .animate-fade-in {
       animation: none;
       opacity: 1;
+      transform: none;
     }
     .animate-pulse {
       animation: none;
