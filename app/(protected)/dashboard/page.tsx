@@ -11,12 +11,13 @@ import { Avatar } from "@/components/ui/avatar";
 import { Chip } from "@/components/ui/chip";
 import { BentoCard } from "@/components/ui/bento-card";
 import { Stat } from "@/components/ui/stat";
-import { ClipboardList, Clock, RefreshCw, CheckCircle2 } from "lucide-react";
+import { ClipboardList, Clock, RefreshCw, CheckCircle2, Plus } from "lucide-react";
 import StatusChart from "@/components/StatusChart";
 import { useTheme } from "@/components/theme-provider";
 import { ListItem } from "@/components/ui/list-item";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusChip } from "@/components/StatusChip";
+import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
 import { Inbox } from "lucide-react";
 import { getGreeting } from "@/lib/greeting";
@@ -268,7 +269,18 @@ export default function DashboardPage() {
         )}
       </section>
 
-      {/* Floating CTA lands in Task 10 */}
+      {profile.role === "user" && (
+        <Link
+          href="/mohon"
+          className="fixed right-4 bottom-24 md:bottom-8 md:right-8 z-40"
+          aria-label="Mohon baru"
+        >
+          <Button size="lg" className="shadow-lg rounded-full px-5 gap-2">
+            <Plus className="h-5 w-5" aria-hidden />
+            Mohon Baru
+          </Button>
+        </Link>
+      )}
     </div>
   );
 }
