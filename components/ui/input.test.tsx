@@ -39,4 +39,26 @@ describe("Input", () => {
     render(<Input id="x" label="Nama" required />);
     expect(screen.getByText("*")).toBeInTheDocument();
   });
+
+  it("renders trailing slot when provided", () => {
+    render(
+      <Input
+        id="pw"
+        label="Kata Laluan"
+        trailing={<button type="button" aria-label="Tukar kelihatan">X</button>}
+      />
+    );
+    expect(screen.getByLabelText("Tukar kelihatan")).toBeInTheDocument();
+  });
+
+  it("trailing slot does not break label association", () => {
+    render(
+      <Input
+        id="pw"
+        label="Kata Laluan"
+        trailing={<button aria-label="toggle">T</button>}
+      />
+    );
+    expect(screen.getByLabelText("Kata Laluan")).toBeInTheDocument();
+  });
 });
