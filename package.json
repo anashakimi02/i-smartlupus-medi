@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "vitest"
+    "test": "vitest",
+    "seed:demo": "node --env-file=.env.local scripts/seed-demo.mjs",
+    "clean:demo": "node --env-file=.env.local scripts/clean-demo.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
