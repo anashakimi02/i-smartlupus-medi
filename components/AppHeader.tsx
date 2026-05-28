@@ -2,17 +2,25 @@
 
 import { ChevronLeft, ChevronRight, Menu } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { ProfileMenu } from "@/components/ProfileMenu";
+import type { UserRole } from "@/lib/supabase/types";
 
 interface AppHeaderProps {
   sidebarCollapsed: boolean;
   onToggleSidebar: () => void;
   onOpenDrawer: () => void;
+  name: string;
+  role: UserRole;
+  onLogOut: () => void;
 }
 
 export function AppHeader({
   sidebarCollapsed,
   onToggleSidebar,
   onOpenDrawer,
+  name,
+  role,
+  onLogOut,
 }: AppHeaderProps) {
   const ChevronIcon = sidebarCollapsed ? ChevronRight : ChevronLeft;
   const chevronLabel = sidebarCollapsed ? "Kembangkan bar sisi" : "Runtuhkan bar sisi";
@@ -40,7 +48,7 @@ export function AppHeader({
       <div className="flex items-center gap-3 min-w-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/jata-negara.png"
+          src="/Jata_MalaysiaV2.svg"
           alt="Jata Negara Malaysia"
           className="h-12 w-auto shrink-0"
         />
@@ -57,8 +65,9 @@ export function AppHeader({
         </div>
       </div>
 
-      <div className="ml-auto">
+      <div className="ml-auto flex items-center gap-2">
         <ThemeToggle />
+        <ProfileMenu name={name} role={role} onLogOut={onLogOut} />
       </div>
     </header>
   );

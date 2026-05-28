@@ -15,6 +15,9 @@ function renderHeader(props: Partial<React.ComponentProps<typeof AppHeader>> = {
         sidebarCollapsed={false}
         onToggleSidebar={() => {}}
         onOpenDrawer={() => {}}
+        name="Anas Hakimi"
+        role="admin"
+        onLogOut={() => {}}
         {...props}
       />
     </ThemeProvider>
@@ -72,5 +75,10 @@ describe("AppHeader", () => {
     renderHeader({ onOpenDrawer });
     fireEvent.click(screen.getByLabelText("Buka menu"));
     expect(onOpenDrawer).toHaveBeenCalledOnce();
+  });
+
+  it("renders ProfileMenu trigger with the user's name", () => {
+    renderHeader({ name: "Anas Hakimi" });
+    expect(screen.getByLabelText(/Menu profil Anas Hakimi/i)).toBeInTheDocument();
   });
 });

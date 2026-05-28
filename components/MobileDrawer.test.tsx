@@ -3,6 +3,10 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { MobileDrawer } from "./MobileDrawer";
 
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/dashboard",
+}));
+
 function renderDrawer(props: Partial<React.ComponentProps<typeof MobileDrawer>> = {}) {
   vi.stubGlobal("matchMedia", vi.fn().mockReturnValue({
     matches: false,
@@ -15,8 +19,6 @@ function renderDrawer(props: Partial<React.ComponentProps<typeof MobileDrawer>> 
         open={true}
         onOpenChange={() => {}}
         role="admin"
-        name="Anas Hakimi"
-        onLogOut={() => {}}
         {...props}
       />
     </ThemeProvider>
@@ -31,26 +33,23 @@ describe("MobileDrawer", () => {
 
   it("does not render panel content when closed", () => {
     renderDrawer({ open: false });
-    expect(screen.queryByText("Log Keluar")).not.toBeInTheDocument();
+    expect(screen.queryByText("i-SMARTLUPUS")).not.toBeInTheDocument();
   });
 
-  it("renders user info and log out button when open", () => {
-    renderDrawer({ open: true, role: "admin", name: "Anas Hakimi" });
-    expect(screen.getByText("Anas Hakimi")).toBeInTheDocument();
-    expect(screen.getByText("Pentadbir")).toBeInTheDocument();
-    expect(screen.getByText("Log Keluar")).toBeInTheDocument();
+  it("renders header content and nav items when open", () => {
+    renderDrawer({ open: true, role: "admin" });
+    expect(screen.getByText("i-SMARTLUPUS")).toBeInTheDocument();
+    expect(screen.getByText("Hospital Besut")).toBeInTheDocument();
+  });
+
+  it("does not render profile/logout (ProfileMenu in navbar owns those)", () => {
+    renderDrawer({ open: true });
+    expect(screen.queryByText("Log Keluar")).not.toBeInTheDocument();
   });
 
   it("does not render a theme toggle (AppHeader owns it)", () => {
     renderDrawer({ open: true });
     expect(screen.queryByRole("switch")).not.toBeInTheDocument();
-  });
-
-  it("fires onLogOut when log out button clicked", () => {
-    const onLogOut = vi.fn();
-    renderDrawer({ onLogOut });
-    fireEvent.click(screen.getByText("Log Keluar"));
-    expect(onLogOut).toHaveBeenCalledOnce();
   });
 
   it("fires onOpenChange(false) when close button clicked", () => {

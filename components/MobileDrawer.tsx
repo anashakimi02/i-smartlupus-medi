@@ -13,11 +13,10 @@ import {
   Users,
   FilePlus,
   LayoutList,
-  LogOut,
   X,
   type LucideIcon,
 } from "lucide-react";
-import { NAV_ITEMS, ROLE_LABELS } from "@/lib/constants";
+import { NAV_ITEMS } from "@/lib/constants";
 import type { UserRole } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 
@@ -37,14 +36,11 @@ interface MobileDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   role: UserRole;
-  name: string;
-  onLogOut: () => void;
 }
 
-export function MobileDrawer({ open, onOpenChange, role, name, onLogOut }: MobileDrawerProps) {
+export function MobileDrawer({ open, onOpenChange, role }: MobileDrawerProps) {
   const pathname = usePathname();
   const items = NAV_ITEMS[role];
-  const roleLabel = ROLE_LABELS[role];
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -59,7 +55,7 @@ export function MobileDrawer({ open, onOpenChange, role, name, onLogOut }: Mobil
             <div className="flex items-center gap-2 min-w-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/jata-negara.png"
+                src="/Jata_MalaysiaV2.svg"
                 alt="Jata Negara Malaysia"
                 className="h-10 w-auto shrink-0"
               />
@@ -113,21 +109,6 @@ export function MobileDrawer({ open, onOpenChange, role, name, onLogOut }: Mobil
             </ul>
           </nav>
 
-          {/* Footer (User Details + Logout) */}
-          <div className="border-t border-[var(--border)] p-6 space-y-4">
-            <div className="min-w-0">
-              <p className="text-body font-bold text-[var(--fg)] truncate">{name}</p>
-              <p className="text-footnote font-medium text-[var(--fg-muted)]">{roleLabel}</p>
-            </div>
-            <button
-              type="button"
-              onClick={onLogOut}
-              className="flex items-center gap-2.5 w-full px-3 py-3 rounded-md text-subhead font-semibold text-[var(--destructive)] bg-[var(--destructive-tint)] hover:brightness-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--destructive)]"
-            >
-              <LogOut className="h-4 w-4 shrink-0" />
-              <span>Log Keluar</span>
-            </button>
-          </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

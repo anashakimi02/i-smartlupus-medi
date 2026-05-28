@@ -93,12 +93,13 @@ export default function ProtectedLayout({
         sidebarCollapsed={collapsed}
         onToggleSidebar={toggleCollapsed}
         onOpenDrawer={() => setDrawerOpen(true)}
+        name={profile.full_name}
+        role={profile.role}
+        onLogOut={handleLogOut}
       />
       <Sidebar
         role={profile.role}
-        name={profile.full_name}
         collapsed={collapsed}
-        onLogOut={handleLogOut}
       />
       <main
         className={cn(
@@ -121,8 +122,6 @@ export default function ProtectedLayout({
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         role={profile.role}
-        name={profile.full_name}
-        onLogOut={handleLogOut}
       />
     </div>
   );
