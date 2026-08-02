@@ -66,7 +66,7 @@ export default function LoginPage() {
             i-SMARTLUPUS
           </h1>
           <p className="text-footnote text-[var(--fg-muted)]">
-            Sistem Pelupusan Aset Perubatan
+            Sistem Pelupusan Aset Hospital Besut
           </p>
         </header>
 
@@ -87,7 +87,7 @@ export default function LoginPage() {
               type="email"
               inputMode="email"
               autoComplete="username"
-              placeholder="Cth: nama@hospital.gov.my"
+              placeholder="email@moh.gov.my"
               value={email}
               onChange={handleEmailChange}
               onBlur={handleEmailBlur}

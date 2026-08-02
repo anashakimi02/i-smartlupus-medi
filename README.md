@@ -1,6 +1,6 @@
 # i-SMARTLUPUS-MEDI
 
-Sistem Pengurusan Pelupusan Aset Perubatan (Medical Asset Disposal Management System).
+Sistem Pelupusan Aset Hospital Besut (Hospital Besut Asset Disposal System).
 Built with Next.js 14, Supabase, and Tailwind CSS.
 
 ## Overview
