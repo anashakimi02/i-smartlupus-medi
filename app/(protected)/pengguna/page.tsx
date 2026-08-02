@@ -6,9 +6,11 @@ import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, UserRole } from "@/lib/supabase/types";
 import { ROLE_LABELS } from "@/lib/constants";
-import { isValidEmail, cn } from "@/lib/utils";
+import { isMohEmail, MOH_DOMAIN, cn } from "@/lib/utils";
+import { isValidPassword, PASSWORD_ERROR, PASSWORD_MIN_LENGTH } from "@/lib/password";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordChecklist } from "@/components/ui/password-checklist";
 import { ListItem } from "@/components/ui/list-item";
 import { Avatar } from "@/components/ui/avatar";
 import SkeletonPulse from "@/components/Skeleton";
@@ -90,16 +92,16 @@ export default function PenggunaPage() {
 
     const cleanEmail = email.trim().toLowerCase();
 
-    if (!isValidEmail(cleanEmail)) {
-      toast.error("Sila masukkan alamat e-mel yang sah.");
+    if (!isMohEmail(cleanEmail)) {
+      toast.error(`Hanya alamat e-mel @${MOH_DOMAIN} dibenarkan.`);
       return;
     }
     if (!fullName.trim()) {
       toast.error("Nama penuh diperlukan.");
       return;
     }
-    if (password.length < 6) {
-      toast.error("Kata laluan mesti sekurang-kurangnya 6 aksara.");
+    if (!isValidPassword(password)) {
+      toast.error(PASSWORD_ERROR);
       return;
     }
 
@@ -188,8 +190,9 @@ export default function PenggunaPage() {
                 inputMode="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="cth. nama@hospital.gov.my"
+                placeholder={`email@${MOH_DOMAIN}`}
                 trailing={<Mail size={16} className="text-[var(--fg-muted)]" />}
+                helper={`Hanya alamat @${MOH_DOMAIN} dibenarkan.`}
               />
 
               {/* Full Name */}
@@ -240,17 +243,19 @@ export default function PenggunaPage() {
               />
 
               {/* Password */}
-              <Input
-                label="Kata Laluan"
-                required
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Minimum 6 aksara"
-                minLength={6}
-                trailing={<Shield size={16} className="text-[var(--fg-muted)]" />}
-                helper="Gunakan kata laluan sementara yang selamat."
-              />
+              <div>
+                <Input
+                  label="Kata Laluan"
+                  required
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Kata laluan sementara"
+                  minLength={PASSWORD_MIN_LENGTH}
+                  trailing={<Shield size={16} className="text-[var(--fg-muted)]" />}
+                />
+                <PasswordChecklist password={password} />
+              </div>
             </div>
 
             {/* Actions */}
