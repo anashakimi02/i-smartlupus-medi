@@ -69,9 +69,6 @@ export default function LoginPage() {
 
       <div className="relative w-full max-w-sm space-y-8 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8 shadow-[var(--shadow-premium)]">
         <header className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[var(--primary)] text-[var(--on-primary)] font-black text-2xl tracking-tight mb-2">
-            iS
-          </div>
           <h1 className="text-title-2 font-semibold text-[var(--fg)] tracking-tight">
             i-SMARTLUPUS
           </h1>
