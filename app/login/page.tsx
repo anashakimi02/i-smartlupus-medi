@@ -56,17 +56,24 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-dvh flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-sm space-y-8">
+    <main className="relative min-h-dvh flex items-center justify-center px-6 py-12">
+      {/* Decorative only — the page is fully usable if the image never loads. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: "url('/login-bg.jpg')" }}
+      />
+      {/* Wash: the photo is light and busy, and the card is near-white.
+          Without this the card edges disappear into the hexagons. */}
+      <div aria-hidden className="absolute inset-0 bg-[rgba(255,255,255,0.72)]" />
+
+      <div className="relative w-full max-w-sm space-y-8 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8 shadow-[var(--shadow-premium)]">
         <header className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[var(--primary)] text-[var(--on-primary)] font-black text-2xl tracking-tight mb-2">
-            iS
-          </div>
           <h1 className="text-title-2 font-semibold text-[var(--fg)] tracking-tight">
             i-SMARTLUPUS
           </h1>
           <p className="text-footnote text-[var(--fg-muted)]">
-            Sistem Pelupusan Aset Perubatan
+            Sistem Pelupusan Aset Hospital Besut
           </p>
         </header>
 
@@ -87,7 +94,7 @@ export default function LoginPage() {
               type="email"
               inputMode="email"
               autoComplete="username"
-              placeholder="Cth: nama@hospital.gov.my"
+              placeholder="email@moh.gov.my"
               value={email}
               onChange={handleEmailChange}
               onBlur={handleEmailBlur}

@@ -2,7 +2,8 @@ import { createClient } from "@supabase/supabase-js";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { isValidEmail } from "@/lib/utils";
+import { isMohEmail, MOH_DOMAIN } from "@/lib/utils";
+import { isValidPassword, PASSWORD_ERROR } from "@/lib/password";
 import type { UserRole } from "@/lib/supabase/types";
 
 const VALID_ROLES: UserRole[] = ["user", "unit_aset", "admin"];
@@ -69,12 +70,15 @@ export async function POST(request: Request) {
   }
 
   const email = String(rawEmail).trim().toLowerCase();
-  if (!isValidEmail(email)) {
-    return NextResponse.json({ error: "Alamat e-mel tidak sah." }, { status: 400 });
+  if (!isMohEmail(email)) {
+    return NextResponse.json(
+      { error: `Hanya alamat e-mel @${MOH_DOMAIN} dibenarkan.` },
+      { status: 400 },
+    );
   }
 
-  if (password.length < 6) {
-    return NextResponse.json({ error: "Kata laluan terlalu pendek (min. 6 aksara)." }, { status: 400 });
+  if (!isValidPassword(String(password))) {
+    return NextResponse.json({ error: PASSWORD_ERROR }, { status: 400 });
   }
 
   if (!VALID_ROLES.includes(role)) {

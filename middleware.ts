@@ -52,6 +52,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|manifest.json|icon-.*\\.png|api/|design-system).*)",
+    // Static assets must be excluded by EXTENSION, not by name. Anything not
+    // listed here is redirected to /login when logged out — which silently
+    // breaks images the login page itself needs.
+    "/((?!_next/static|_next/image|favicon.ico|manifest.json|api/|design-system|.*\\.(?:jpg|jpeg|png|svg|webp|ico|gif)$).*)",
   ],
 };
