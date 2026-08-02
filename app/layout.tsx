@@ -21,7 +21,7 @@ const body = Public_Sans({
 
 export const metadata: Metadata = {
   title: "i-SMARTLUPUS",
-  description: "Sistem Pengurusan Pelupusan Aset Perubatan",
+  description: "Sistem Pelupusan Aset Hospital Besut",
   manifest: "/manifest.json",
 };
 

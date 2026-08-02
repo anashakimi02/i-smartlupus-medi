@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Users, UserPlus, Shield, Building, Mail, X } from "lucide-react";
+import { Users, UserPlus, Building, Mail, X, Eye, EyeOff, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, UserRole } from "@/lib/supabase/types";
 import { ROLE_LABELS } from "@/lib/constants";
-import { isValidEmail, cn } from "@/lib/utils";
+import { isMohEmail, MOH_DOMAIN, cn } from "@/lib/utils";
+import { isValidPassword, PASSWORD_ERROR, PASSWORD_MIN_LENGTH } from "@/lib/password";
+import { blockOnDeactivate, DEACTIVATE_BLOCK_MESSAGE } from "@/lib/users";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordChecklist } from "@/components/ui/password-checklist";
 import { ListItem } from "@/components/ui/list-item";
 import { Avatar } from "@/components/ui/avatar";
 import SkeletonPulse from "@/components/Skeleton";
@@ -17,6 +20,11 @@ const ROLE_OPTIONS: { value: UserRole; label: string }[] = [
   { value: "user", label: "Pengguna" },
   { value: "unit_aset", label: "Unit Aset" },
   { value: "admin", label: "Pentadbir" },
+];
+
+const STATUS_OPTIONS: { value: boolean; label: string; hint: string }[] = [
+  { value: true, label: "Aktif", hint: "Pengguna boleh log masuk." },
+  { value: false, label: "Tidak Aktif", hint: "Log masuk disekat serta-merta." },
 ];
 
 function PageSkeleton() {
@@ -59,6 +67,12 @@ export default function PenggunaPage() {
   const [role, setRole] = useState<UserRole>("user");
   const [unitName, setUnitName] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isActive, setIsActive] = useState(true);
+
+  // null = creating a new user, an id = editing that user.
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   async function loadProfiles() {
     const { data, error } = await supabase
@@ -74,6 +88,8 @@ export default function PenggunaPage() {
 
   useEffect(() => {
     loadProfiles();
+    // Needed for the "cannot deactivate yourself" guard.
+    supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -83,6 +99,31 @@ export default function PenggunaPage() {
     setRole("user");
     setUnitName("");
     setPassword("");
+    setShowPassword(false);
+    setIsActive(true);
+    setEditingId(null);
+  }
+
+  function closeForm() {
+    resetForm();
+    setShowForm(false);
+  }
+
+  function openCreate() {
+    resetForm();
+    setShowForm(true);
+  }
+
+  function openEdit(p: Profile) {
+    setEditingId(p.id);
+    setEmail(p.email);
+    setFullName(p.full_name);
+    setRole(p.role);
+    setUnitName(p.unit_name ?? "");
+    setIsActive(p.is_active);
+    setPassword("");
+    setShowPassword(false);
+    setShowForm(true);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -90,44 +131,75 @@ export default function PenggunaPage() {
 
     const cleanEmail = email.trim().toLowerCase();
 
-    if (!isValidEmail(cleanEmail)) {
-      toast.error("Sila masukkan alamat e-mel yang sah.");
-      return;
-    }
     if (!fullName.trim()) {
       toast.error("Nama penuh diperlukan.");
       return;
     }
-    if (password.length < 6) {
-      toast.error("Kata laluan mesti sekurang-kurangnya 6 aksara.");
-      return;
+
+    // Email and password are only settable at creation.
+    if (!editingId) {
+      if (!isMohEmail(cleanEmail)) {
+        toast.error(`Hanya alamat e-mel @${MOH_DOMAIN} dibenarkan.`);
+        return;
+      }
+      if (!isValidPassword(password)) {
+        toast.error(PASSWORD_ERROR);
+        return;
+      }
+    }
+
+    // Fail fast on a guard the server will refuse anyway, so the admin gets
+    // the reason immediately instead of a round trip.
+    if (editingId && !isActive && currentUserId) {
+      const block = blockOnDeactivate(editingId, currentUserId, profiles);
+      if (block) {
+        toast.error(DEACTIVATE_BLOCK_MESSAGE[block]);
+        return;
+      }
     }
 
     setSubmitting(true);
 
     try {
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: cleanEmail,
-          password,
-          full_name: fullName.trim(),
-          role,
-          unit_name: unitName.trim() || null,
-        }),
-      });
+      const res = editingId
+        ? await fetch(`/api/users/${editingId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              full_name: fullName.trim(),
+              role,
+              unit_name: unitName.trim() || null,
+              is_active: isActive,
+            }),
+          })
+        : await fetch("/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: cleanEmail,
+              password,
+              full_name: fullName.trim(),
+              role,
+              unit_name: unitName.trim() || null,
+            }),
+          });
 
       const result = await res.json();
 
       if (!res.ok) {
-        toast.error(result.error || "Pendaftaran gagal. Cuba semula.");
+        toast.error(
+          result.error ||
+            (editingId ? "Kemaskini gagal. Cuba semula." : "Pendaftaran gagal. Cuba semula."),
+        );
         return;
       }
 
-      toast.success(`${fullName.trim()} berjaya didaftarkan!`);
-      resetForm();
-      setShowForm(false);
+      toast.success(
+        editingId
+          ? `${fullName.trim()} berjaya dikemaskini.`
+          : `${fullName.trim()} berjaya didaftarkan!`,
+      );
+      closeForm();
       await loadProfiles();
     } catch {
       toast.error("Ralat tidak dijangka. Sila cuba semula.");
@@ -143,8 +215,7 @@ export default function PenggunaPage() {
       {/* Header */}
       <header className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-title-1 font-semibold text-[var(--fg)] tracking-tight flex items-center gap-2">
-            <Users size={24} className="text-[var(--primary)]" />
+          <h1 className="text-title-1 font-semibold text-[var(--fg)] tracking-tight">
             Pengurusan Pengguna
           </h1>
           <p className="text-footnote text-[var(--fg-muted)] mt-1">
@@ -152,7 +223,7 @@ export default function PenggunaPage() {
           </p>
         </div>
         <Button
-          onClick={() => setShowForm((prev) => !prev)}
+          onClick={() => (showForm ? closeForm() : openCreate())}
           variant={showForm ? "ghost" : "primary"}
           className={showForm ? "shrink-0 h-12 w-12 p-0 text-[var(--fg)]" : "shrink-0 gap-2"}
           aria-label={showForm ? "Tutup borang" : undefined}
@@ -174,7 +245,7 @@ export default function PenggunaPage() {
           <div className="flex items-center gap-2 mb-6">
             <UserPlus size={18} className="text-[var(--primary)]" />
             <h2 className="text-subhead font-semibold text-[var(--fg)] uppercase tracking-wider">
-              Pendaftaran Pengguna Baharu
+              {editingId ? "Kemaskini Pengguna" : "Pendaftaran Pengguna Baharu"}
             </h2>
           </div>
           
@@ -188,8 +259,20 @@ export default function PenggunaPage() {
                 inputMode="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="cth. nama@hospital.gov.my"
-                trailing={<Mail size={16} className="text-[var(--fg-muted)]" />}
+                disabled={!!editingId}
+                placeholder={`email@${MOH_DOMAIN}`}
+                trailing={
+                  editingId ? (
+                    <Lock size={16} className="text-[var(--fg-muted)]" />
+                  ) : (
+                    <Mail size={16} className="text-[var(--fg-muted)]" />
+                  )
+                }
+                helper={
+                  editingId
+                    ? "Tidak boleh diubah."
+                    : `Hanya alamat @${MOH_DOMAIN} dibenarkan.`
+                }
               />
 
               {/* Full Name */}
@@ -209,7 +292,7 @@ export default function PenggunaPage() {
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {ROLE_OPTIONS.map((opt) => {
-                    const isActive = role === opt.value;
+                    const selected = role === opt.value;
                     return (
                       <button
                         key={opt.value}
@@ -217,7 +300,7 @@ export default function PenggunaPage() {
                         onClick={() => setRole(opt.value)}
                         className={cn(
                           "h-11 rounded-md border text-caption font-semibold transition-all active:scale-95 uppercase tracking-wide",
-                          isActive
+                          selected
                             ? "bg-[var(--primary)] text-[var(--on-primary)] border-[var(--primary)] shadow-sm"
                             : "bg-[var(--bg)] text-[var(--fg-muted)] border-[var(--border)] hover:border-[var(--border-strong)]"
                         )}
@@ -239,19 +322,65 @@ export default function PenggunaPage() {
                 trailing={<Building size={16} className="text-[var(--fg-muted)]" />}
               />
 
-              {/* Password */}
-              <Input
-                label="Kata Laluan"
-                required
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Minimum 6 aksara"
-                minLength={6}
-                trailing={<Shield size={16} className="text-[var(--fg-muted)]" />}
-                helper="Gunakan kata laluan sementara yang selamat."
-              />
+              {/* Password — only ever set at creation. */}
+              {!editingId && (
+                <div>
+                  <Input
+                    label="Kata Laluan"
+                    required
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Kata laluan sementara"
+                    minLength={PASSWORD_MIN_LENGTH}
+                    trailing={
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((v) => !v)}
+                        aria-label={showPassword ? "Sembunyikan kata laluan" : "Tunjukkan kata laluan"}
+                        className="inline-flex items-center justify-center h-10 w-10 rounded-md text-[var(--fg-muted)] hover:text-[var(--fg)] hover:bg-[var(--primary-tint)] transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    }
+                  />
+                  <PasswordChecklist password={password} />
+                </div>
+              )}
             </div>
+
+            {/* Account status — edit only; a new user is always created active. */}
+            {editingId && (
+              <div className="flex flex-col gap-1.5">
+                <label className="text-subhead font-medium text-[var(--fg)]">
+                  Status Akaun
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {STATUS_OPTIONS.map((opt) => {
+                    const selected = isActive === opt.value;
+                    return (
+                      <button
+                        key={String(opt.value)}
+                        type="button"
+                        onClick={() => setIsActive(opt.value)}
+                        aria-pressed={selected}
+                        className={cn(
+                          "min-h-touch px-4 py-2.5 rounded-md border text-left transition-all active:scale-95",
+                          selected && opt.value
+                            ? "bg-[var(--primary)] text-[var(--on-primary)] border-[var(--primary)] shadow-sm"
+                            : selected
+                              ? "bg-[var(--destructive)] text-white border-[var(--destructive)] shadow-sm"
+                              : "bg-[var(--bg)] text-[var(--fg-muted)] border-[var(--border)] hover:border-[var(--border-strong)]",
+                        )}
+                      >
+                        <span className="block text-subhead font-semibold">{opt.label}</span>
+                        <span className="block text-footnote opacity-80">{opt.hint}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Actions */}
             <div className="flex gap-3 pt-4 border-t border-[var(--border)]">
@@ -260,16 +389,9 @@ export default function PenggunaPage() {
                 loading={submitting}
                 className="flex-1"
               >
-                Daftar Pengguna
+                {editingId ? "Simpan Perubahan" : "Daftar Pengguna"}
               </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => {
-                  resetForm();
-                  setShowForm(false);
-                }}
-              >
+              <Button type="button" variant="secondary" onClick={closeForm}>
                 Batal
               </Button>
             </div>
@@ -288,10 +410,12 @@ export default function PenggunaPage() {
           profiles.map((p) => (
             <ListItem
               key={p.id}
+              onClick={() => openEdit(p)}
+              className={cn(!p.is_active && "opacity-60")}
               leading={
-                <Avatar 
-                  name={p.full_name} 
-                  role={p.role === "user" ? "pemohon" : p.role === "unit_aset" ? "penyemak" : "pentadbir"} 
+                <Avatar
+                  name={p.full_name}
+                  role={p.role === "user" ? "pemohon" : p.role === "unit_aset" ? "penyemak" : "pentadbir"}
                 />
               }
               title={
@@ -311,9 +435,16 @@ export default function PenggunaPage() {
                 </div>
               }
               trailing={
-                <span className="bg-[var(--primary-tint)] text-[var(--primary)] text-[10px] font-bold uppercase px-2 py-0.5 rounded-sm border border-[var(--primary)] border-opacity-20">
-                  {ROLE_LABELS[p.role]}
-                </span>
+                <div className="flex items-center gap-1.5">
+                  {!p.is_active && (
+                    <span className="bg-[var(--destructive)] text-white text-[10px] font-bold uppercase px-2 py-0.5 rounded-sm">
+                      Tidak Aktif
+                    </span>
+                  )}
+                  <span className="bg-[var(--primary-tint)] text-[var(--primary)] text-[10px] font-bold uppercase px-2 py-0.5 rounded-sm border border-[var(--primary)] border-opacity-20">
+                    {ROLE_LABELS[p.role]}
+                  </span>
+                </div>
               }
             />
           ))

@@ -1,7 +1,7 @@
 {
   "name": "i-SMARTLUPUS",
   "short_name": "SMARTLUPUS",
-  "description": "Sistem Pengurusan Pelupusan Aset Perubatan",
+  "description": "Sistem Pelupusan Aset Hospital Besut",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#f8fafc",

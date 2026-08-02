@@ -4,6 +4,17 @@ export function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
 
+/** The only email domain allowed to hold an account in this system. */
+export const MOH_DOMAIN = "moh.gov.my";
+
+// ponytail: compare the domain part exactly — endsWith() would accept
+// "attacker@notmoh.gov.my" and "ahmad@hkl.moh.gov.my" as MOH addresses.
+export function isMohEmail(email: string): boolean {
+  const clean = email.trim().toLowerCase();
+  if (!isValidEmail(clean)) return false;
+  return clean.slice(clean.indexOf("@") + 1) === MOH_DOMAIN;
+}
+
 export function formatDate(date: string | Date): string {
   return new Date(date).toLocaleDateString("ms-MY", {
     day: "2-digit",

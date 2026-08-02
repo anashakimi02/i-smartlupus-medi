@@ -21,6 +21,7 @@ export interface Profile {
   role: UserRole;
   unit_name: string | null;
   created_at: string;
+  is_active: boolean;
 }
 
 export interface DisposalTicket {
