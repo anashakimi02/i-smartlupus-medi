@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, LogIn } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { isValidEmail } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -61,29 +61,28 @@ export default function LoginPage() {
       <div
         aria-hidden
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/login-bg.jpg')" }}
+        style={{ backgroundImage: "url('/login-bg-besut.png')" }}
       />
       {/* Wash: the photo is light and busy, and the card is near-white.
           Without this the card edges disappear into the hexagons. */}
       <div aria-hidden className="absolute inset-0 bg-[rgba(255,255,255,0.72)]" />
 
-      <div className="relative w-full max-w-sm space-y-8 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8 shadow-[var(--shadow-premium)]">
-        <header className="text-center space-y-2">
-          <h1 className="text-title-2 font-semibold text-[var(--fg)] tracking-tight">
-            i-SMARTLUPUS
-          </h1>
-          <p className="text-footnote text-[var(--fg-muted)]">
-            Sistem Pelupusan Aset Hospital Besut
-          </p>
+      <div className="relative w-full max-w-lg space-y-6 rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8 shadow-[var(--shadow-premium)]">
+        <header className="flex flex-col items-center">
+          <img
+            src="/logo.png"
+            alt="i-SMARTLUPUS"
+            className="w-72 h-auto object-contain"
+          />
         </header>
 
         <div className="space-y-6">
-          <div>
-            <h2 className="text-display font-semibold text-[var(--fg)] tracking-tight">
-              Selamat datang
+          <div className="text-center">
+            <h2 className="text-title-2 font-bold text-[#0a2540] tracking-tight">
+              Selamat Datang
             </h2>
-            <p className="mt-1 text-body text-[var(--fg-muted)]">
-              Log masuk dengan e-mel.
+            <p className="mt-1 text-footnote text-[var(--fg-muted)]">
+              Log masuk dengan e-mel rasmi anda untuk akses ke sistem.
             </p>
           </div>
 
@@ -100,6 +99,8 @@ export default function LoginPage() {
               onBlur={handleEmailBlur}
               error={emailError}
               required
+              leading={<Mail className="h-4 w-4 text-[#1b7543]" />}
+              className="border-[#1b7543]/20 focus:border-[#1b7543] focus:ring-[#1b7543]/30"
             />
             <Input
               id="password"
@@ -110,12 +111,14 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              leading={<Lock className="h-4 w-4 text-[#1b7543]" />}
+              className="border-[#1b7543]/20 focus:border-[#1b7543] focus:ring-[#1b7543]/30"
               trailing={
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
                   aria-label={showPassword ? "Sembunyikan kata laluan" : "Tunjukkan kata laluan"}
-                  className="inline-flex items-center justify-center h-10 w-10 rounded-md text-[var(--fg-muted)] hover:text-[var(--fg)] hover:bg-[var(--primary-tint)] transition-colors"
+                  className="inline-flex items-center justify-center h-10 w-10 rounded-md text-[var(--fg-muted)] hover:text-[#1b7543] hover:bg-[#1b7543]/10 transition-colors"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -126,9 +129,10 @@ export default function LoginPage() {
               size="lg"
               loading={loading}
               disabled={loading || email.length === 0 || password.length === 0}
-              className="w-full mt-2"
+              className="w-full mt-4 bg-[#1b7543] hover:bg-[#155430] active:scale-[0.98] transition-all duration-200 border-none rounded-xl h-12 text-white font-bold flex items-center justify-center gap-2"
             >
-              Log Masuk
+              {!loading && <LogIn className="h-5 w-5" />}
+              <span>Log Masuk</span>
             </Button>
           </form>
         </div>

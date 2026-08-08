@@ -8,10 +8,12 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">
   helper?: string;
   error?: string;
   trailing?: ReactNode;
+  leading?: ReactNode;
+  labelAddon?: ReactNode;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ id, label, helper, error, required, trailing, className, ...rest }, ref) => {
+  ({ id, label, helper, error, required, trailing, leading, labelAddon, className, ...rest }, ref) => {
     const autoId = useId();
     const inputId = id ?? autoId;
     const helperId = helper ? `${inputId}-helper` : undefined;
@@ -20,11 +22,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <div className="flex flex-col gap-1.5">
-        <label htmlFor={inputId} className="text-subhead font-medium text-[var(--fg)]">
-          {label}
+        <label htmlFor={inputId} className="text-subhead font-medium text-[var(--fg)] flex items-center gap-2">
+          {labelAddon}
+          <span>{label}</span>
           {required && <span className="text-[var(--destructive)] ml-0.5" aria-hidden>*</span>}
         </label>
         <div className="relative">
+          {leading && (
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+              {leading}
+            </div>
+          )}
           <input
             ref={ref}
             id={inputId}
@@ -32,13 +40,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             aria-invalid={!!error}
             aria-describedby={describedBy}
             className={cn(
-              "min-h-touch w-full px-4 rounded-md bg-[var(--surface)] text-[var(--fg)] text-body",
+              "min-h-touch w-full px-4 rounded-xl bg-[var(--surface)] text-[var(--fg)] text-body",
               "border border-[var(--border)]",
               "transition-[border-color,box-shadow] duration-base ease-ios-out",
               "focus:outline-none focus:border-[var(--primary)] focus:shadow-ring",
               "placeholder:text-[var(--fg-muted)]",
               "disabled:opacity-50 disabled:cursor-not-allowed",
               error && "border-[var(--destructive)]",
+              !!leading && "pl-10",
               !!trailing && "pr-12",
               className,
             )}
