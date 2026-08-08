@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Eye, EyeOff, Mail, Lock, User, LogIn } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, LogIn } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { isValidEmail } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -61,7 +61,7 @@ export default function LoginPage() {
       <div
         aria-hidden
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/login-bg.jpg')" }}
+        style={{ backgroundImage: "url('/login-bg-besut.png')" }}
       />
       {/* Wash: the photo is light and busy, and the card is near-white.
           Without this the card edges disappear into the hexagons. */}
