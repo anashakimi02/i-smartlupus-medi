@@ -61,11 +61,15 @@ export default function LoginPage() {
       <div
         aria-hidden
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/login-bg-besut.png')" }}
+        style={{ backgroundImage: "url('/login-bg.jpg')" }}
       />
       {/* Wash: the photo is light and busy, and the card is near-white.
-          Without this the card edges disappear into the hexagons. */}
-      <div aria-hidden className="absolute inset-0 bg-[rgba(255,255,255,0.72)]" />
+          Without this the card edges disappear into the hexagons.
+          Alpha is tuned to the PHOTO — 0.72 suited the darker besut shot (mean 141);
+          this one has mean 217, and 0.72 washed it to within 7/255 of --bg, i.e. invisible.
+          0.35 puts it back at the same visual weight the besut version shipped with.
+          Swap the photo, re-check this number. */}
+      <div aria-hidden className="absolute inset-0 bg-[rgba(255,255,255,0.35)]" />
 
       <div className="relative w-full max-w-lg space-y-6 rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8 shadow-[var(--shadow-premium)]">
         <header className="flex flex-col items-center">
