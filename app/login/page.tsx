@@ -61,7 +61,7 @@ export default function LoginPage() {
       <div
         aria-hidden
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/login-bg.png')" }}
+        style={{ backgroundImage: "url('/login-bg.jpg')" }}
       />
       {/* Wash: the photo is light and busy, and the card is near-white.
           Without this the card edges disappear into the hexagons. */}
