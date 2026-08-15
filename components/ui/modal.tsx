@@ -6,17 +6,30 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface ModalProps {
-  trigger: ReactNode;
+  /** Omit when using controlled `open` — a programmatic modal has nothing to click. */
+  trigger?: ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   title: ReactNode;
   description?: ReactNode;
   children: ReactNode;
   className?: string;
 }
 
-export function Modal({ trigger, title, description, children, className }: ModalProps) {
+export function Modal({
+  trigger,
+  open,
+  onOpenChange,
+  title,
+  description,
+  children,
+  className,
+}: ModalProps) {
   return (
-    <Dialog.Root>
-      <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
+    // Radix reads open={undefined} as uncontrolled, so trigger-only callers
+    // keep working with no edit.
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      {trigger && <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>}
       <Dialog.Portal>
         <Dialog.Overlay
           className="fixed inset-0 z-40 bg-[var(--overlay)] backdrop-blur-sm animate-fade-in"
