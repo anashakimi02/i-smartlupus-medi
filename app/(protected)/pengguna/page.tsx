@@ -83,6 +83,10 @@ export default function PenggunaPage() {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // Collapsed by default so a routine name-or-role edit never looks like it
+  // is about to change someone's password.
+  const [resettingPassword, setResettingPassword] = useState(false);
+
   async function loadProfiles() {
     const { data, error } = await supabase
       .from("profiles")
@@ -113,6 +117,7 @@ export default function PenggunaPage() {
     setEditingId(null);
     setConfirmingDelete(false);
     setDeleting(false);
+    setResettingPassword(false);
   }
 
   function closeForm() {
@@ -195,6 +200,11 @@ export default function PenggunaPage() {
       }
     }
 
+    if (editingId && resettingPassword && !isValidPassword(password)) {
+      toast.error(PASSWORD_ERROR);
+      return;
+    }
+
     // Fail fast on a guard the server will refuse anyway, so the admin gets
     // the reason immediately instead of a round trip.
     if (editingId && !isActive && currentUserId) {
@@ -217,6 +227,9 @@ export default function PenggunaPage() {
               role,
               unit_name: unitName.trim() || null,
               is_active: isActive,
+              // Omitted unless the admin opened the reset control, so an
+              // ordinary edit cannot change a password by accident.
+              ...(resettingPassword && password ? { password } : {}),
             }),
           })
         : await fetch("/api/register", {
@@ -392,6 +405,71 @@ export default function PenggunaPage() {
                     }
                   />
                   <PasswordChecklist password={password} />
+                </div>
+              )}
+
+              {/* Editing: password is never pre-filled and never sent unless
+                  the admin explicitly opens this. */}
+              {editingId && (
+                <div>
+                  {!resettingPassword ? (
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-subhead font-medium text-[var(--fg)]">
+                        Kata Laluan
+                      </label>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => setResettingPassword(true)}
+                        className="gap-2 justify-start"
+                      >
+                        <Lock size={16} />
+                        Tetapkan Semula Kata Laluan
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <Input
+                        label="Kata Laluan Baharu"
+                        required
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Kata laluan sementara"
+                        minLength={PASSWORD_MIN_LENGTH}
+                        helper="Beritahu pengguna secara peribadi — tiada e-mel dihantar."
+                        trailing={
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword((v) => !v)}
+                            aria-label={
+                              showPassword
+                                ? "Sembunyikan kata laluan"
+                                : "Tunjukkan kata laluan"
+                            }
+                            className="inline-flex items-center justify-center h-10 w-10 rounded-md text-[var(--fg-muted)] hover:text-[var(--fg)] hover:bg-[var(--primary-tint)] transition-colors"
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </button>
+                        }
+                      />
+                      <PasswordChecklist password={password} />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setResettingPassword(false);
+                          setPassword("");
+                        }}
+                        className="text-footnote text-[var(--fg-muted)] hover:text-[var(--fg)] mt-1.5 underline"
+                      >
+                        Batal tetapan semula
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>
