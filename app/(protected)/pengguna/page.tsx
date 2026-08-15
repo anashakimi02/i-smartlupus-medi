@@ -1,16 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Users, UserPlus, Building, Mail, X, Eye, EyeOff, Lock } from "lucide-react";
+import { Users, UserPlus, Building, Mail, X, Eye, EyeOff, Lock, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, UserRole } from "@/lib/supabase/types";
 import { ROLE_LABELS } from "@/lib/constants";
 import { isMohEmail, MOH_DOMAIN, cn } from "@/lib/utils";
 import { isValidPassword, PASSWORD_ERROR, PASSWORD_MIN_LENGTH } from "@/lib/password";
-import { blockOnDeactivate, DEACTIVATE_BLOCK_MESSAGE } from "@/lib/users";
+import {
+  blockOnDeactivate,
+  DEACTIVATE_BLOCK_MESSAGE,
+  blockOnDelete,
+  DELETE_BLOCK_MESSAGE,
+} from "@/lib/users";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Modal } from "@/components/ui/modal";
 import { PasswordChecklist } from "@/components/ui/password-checklist";
 import { ListItem } from "@/components/ui/list-item";
 import { Avatar } from "@/components/ui/avatar";
@@ -74,6 +80,9 @@ export default function PenggunaPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
   async function loadProfiles() {
     const { data, error } = await supabase
       .from("profiles")
@@ -102,6 +111,8 @@ export default function PenggunaPage() {
     setShowPassword(false);
     setIsActive(true);
     setEditingId(null);
+    setConfirmingDelete(false);
+    setDeleting(false);
   }
 
   function closeForm() {
@@ -124,6 +135,42 @@ export default function PenggunaPage() {
     setPassword("");
     setShowPassword(false);
     setShowForm(true);
+  }
+
+  async function handleDelete() {
+    if (!editingId) return;
+
+    // Fail fast on a guard the server will refuse anyway, so the admin gets
+    // the reason immediately instead of a round trip. Same pattern as the
+    // deactivate path in handleSubmit.
+    if (currentUserId) {
+      const block = blockOnDelete(editingId, currentUserId, profiles);
+      if (block) {
+        toast.error(DELETE_BLOCK_MESSAGE[block]);
+        setConfirmingDelete(false);
+        return;
+      }
+    }
+
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/users/${editingId}`, { method: "DELETE" });
+      const result = await res.json();
+
+      if (!res.ok) {
+        toast.error(result.error || "Gagal memadam pengguna. Cuba semula.");
+        return;
+      }
+
+      toast.success(`${fullName.trim()} telah dipadam.`);
+      setConfirmingDelete(false);
+      closeForm();
+      await loadProfiles();
+    } catch {
+      toast.error("Ralat tidak dijangka. Sila cuba semula.");
+    } finally {
+      setDeleting(false);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -395,6 +442,25 @@ export default function PenggunaPage() {
                 Batal
               </Button>
             </div>
+
+            {/* Destructive action sits below its own divider, away from Simpan. */}
+            {editingId && (
+              <div className="pt-4 border-t border-[var(--border)]">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setConfirmingDelete(true)}
+                  className="gap-2 text-[var(--destructive)] hover:bg-[var(--destructive)]/10"
+                >
+                  <Trash2 size={16} />
+                  Padam Pengguna
+                </Button>
+                <p className="text-footnote text-[var(--fg-muted)] mt-1.5">
+                  Tindakan ini kekal. Untuk menyekat log masuk sahaja, tetapkan status
+                  kepada Tidak Aktif.
+                </p>
+              </div>
+            )}
           </form>
         </div>
       )}
@@ -450,6 +516,40 @@ export default function PenggunaPage() {
           ))
         )}
       </div>
+
+      {/* Not window.confirm: unstyled, untranslatable, and it blocks the
+          event loop. */}
+      <Modal
+        open={confirmingDelete}
+        onOpenChange={setConfirmingDelete}
+        title="Padam Pengguna?"
+        description="Tindakan ini tidak boleh dibatalkan."
+      >
+        <div className="space-y-4">
+          <p className="text-subhead text-[var(--fg)]">
+            Akaun <span className="font-semibold">{fullName}</span> ({email}) akan
+            dipadam kekal. Permohonan dan rekod audit yang pernah dibuat akan kekal,
+            tetapi tanpa nama pemohon.
+          </p>
+          <div className="flex gap-3">
+            <Button
+              type="button"
+              loading={deleting}
+              onClick={handleDelete}
+              className="flex-1 bg-[var(--destructive)] hover:opacity-90 border-none text-white"
+            >
+              Ya, Padam
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setConfirmingDelete(false)}
+            >
+              Batal
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
