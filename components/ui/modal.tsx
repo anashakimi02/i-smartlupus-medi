@@ -39,7 +39,11 @@ export function Modal({
             "fixed z-50 bg-[var(--surface)] shadow-lg text-[var(--fg)]",
             // Top-centred at every width, like a browser alert. No bottom
             // sheet: one position everywhere is one thing to reason about.
-            "top-8 left-1/2 -translate-x-1/2",
+            // Centred with auto margins, NOT -translate-x-1/2: animate-in
+            // animates `transform`, and an animated property outranks a
+            // normal declaration, so a translate-based centre gets wiped the
+            // moment the animation applies.
+            "top-8 left-0 right-0 mx-auto",
             "w-[calc(100%-2rem)] max-w-[480px] rounded-2xl p-6 animate-in",
             // A tall body must not push OK past the fold, where nothing could
             // reach it — the dialog scrolls instead of the page.
@@ -60,12 +64,17 @@ export function Modal({
               )}
             </div>
             <Dialog.Close asChild>
+              {/* The glyph is small, the hit area is not: 20px icon + p-3 = a
+                  44px target, the WCAG 2.5.5 / iOS HIG floor. The 2026-07-19
+                  pass enlarged these because older staff could not SEE them;
+                  shrinking the drawing while keeping the target honours that
+                  without the X dominating the header. */}
               <button
                 type="button"
                 aria-label="Tutup"
-                className="-mr-1 p-2.5 rounded-md text-[var(--fg)] hover:bg-[var(--primary-tint)] transition-colors"
+                className="-mr-1.5 p-3 rounded-md text-[var(--fg-muted)] hover:text-[var(--fg)] hover:bg-[var(--primary-tint)] transition-colors"
               >
-                <X className="h-7 w-7" strokeWidth={2.5} />
+                <X className="h-5 w-5" strokeWidth={2} />
               </button>
             </Dialog.Close>
           </div>
