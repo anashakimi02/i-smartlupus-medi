@@ -37,9 +37,13 @@ export function Modal({
         <Dialog.Content
           className={cn(
             "fixed z-50 bg-[var(--surface)] shadow-lg text-[var(--fg)]",
-            "bottom-0 left-0 right-0 rounded-t-2xl p-6 animate-sheet-up",
-            "sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2",
-            "sm:max-w-[480px] sm:w-full sm:rounded-2xl sm:animate-in",
+            // Top-centred at every width, like a browser alert. No bottom
+            // sheet: one position everywhere is one thing to reason about.
+            "top-8 left-1/2 -translate-x-1/2",
+            "w-[calc(100%-2rem)] max-w-[480px] rounded-2xl p-6 animate-in",
+            // A tall body must not push OK past the fold, where nothing could
+            // reach it — the dialog scrolls instead of the page.
+            "max-h-[calc(100vh-4rem)] overflow-y-auto",
             "focus:outline-none",
             className,
           )}
