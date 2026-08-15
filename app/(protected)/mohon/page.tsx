@@ -20,6 +20,7 @@ import {
 } from "@/lib/disposal/upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Modal } from "@/components/ui/modal";
 
 async function compressImage(file: File, maxWidth = 800, quality = 0.7): Promise<Blob> {
   return new Promise((resolve) => {
@@ -53,6 +54,10 @@ export default function MohonPage() {
   const [location, setLocation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Set when submission succeeds. Holds the ticket number so the modal can
+  // show it; null means the modal is closed.
+  const [submittedTicketNo, setSubmittedTicketNo] = useState<string | null>(null);
+
   // Files are held in memory while filling the form; uploaded after the ticket
   // is created on submit, so an abandoned form never orphans storage objects.
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -60,6 +65,14 @@ export default function MohonPage() {
   const [borangFile, setBorangFile] = useState<File | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const borangInputRef = useRef<HTMLInputElement>(null);
+
+  // Any dismissal — OK, the X, or Escape — means the applicant has seen it.
+  // Only ever go forward. Mirrors the push+refresh pair the submit path used
+  // to run inline.
+  function leaveToStatus() {
+    router.push("/status");
+    router.refresh();
+  }
 
   function selectSubCategory(sub: AssetSubCategory) {
     setSubCategory(sub);
@@ -185,9 +198,7 @@ export default function MohonPage() {
         }
       }
 
-      toast.success(`Permohonan ${ticket.ticket_no} berjaya dihantar!`);
-      router.push("/status");
-      router.refresh();
+      setSubmittedTicketNo(ticket.ticket_no);
     } catch {
       toast.error("Ralat tidak dijangka. Sila cuba lagi.");
     } finally {
@@ -480,6 +491,30 @@ export default function MohonPage() {
           </div>
         </form>
       </div>
+
+      <Modal
+        open={submittedTicketNo !== null}
+        onOpenChange={(next) => {
+          if (!next) leaveToStatus();
+        }}
+        title="Permohonan Berjaya Dihantar"
+      >
+        <div className="space-y-4">
+          <p className="text-subhead text-[var(--fg)]">
+            Permohonan anda telah berjaya dihantar.
+          </p>
+          <p className="text-subhead text-[var(--fg)]">
+            Semakan permohonan akan dibuat dalam tiga (3) hari bekerja.
+          </p>
+          <p className="text-footnote text-[var(--fg-muted)]">
+            No. Rujukan:{" "}
+            <span className="font-semibold text-[var(--fg)]">{submittedTicketNo}</span>
+          </p>
+          <Button className="w-full" onClick={leaveToStatus}>
+            OK
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -244,23 +244,26 @@ export async function fetchUnitAsetDashboard(
     asset_type: string;
     category: AssetCategory | null;
     created_at: string;
-    created_by: string;
+    created_by: string | null;
   }>;
 
+  // Null actors (owner hard-deleted, migration 008) must not reach the id
+  // list — it feeds .in("id", …) on a UUID column, where one null breaks the
+  // lookup for every row, not just the orphaned one.
   const userIds = new Set<string>();
-  for (const row of pendingRows) userIds.add(row.created_by);
+  for (const row of pendingRows) if (row.created_by) userIds.add(row.created_by);
 
   // Audit feed actor + ticket lookups
   const audit = (auditRaw ?? []) as Array<{
     id: string;
     action: string;
     ticket_id: string;
-    performed_by: string;
+    performed_by: string | null;
     created_at: string;
   }>;
   const ticketIds = new Set<string>();
   for (const a of audit) {
-    userIds.add(a.performed_by);
+    if (a.performed_by) userIds.add(a.performed_by);
     ticketIds.add(a.ticket_id);
   }
 
@@ -293,7 +296,7 @@ export async function fetchUnitAsetDashboard(
     id: row.id,
     ticket_no: row.ticket_no,
     asset_name: row.asset_type,
-    requester_name: nameById.get(row.created_by) ?? "—",
+    requester_name: (row.created_by && nameById.get(row.created_by)) || "—",
     age_days: Math.floor(diffDays(now, row.created_at)),
     category: row.category,
   }));
@@ -302,7 +305,7 @@ export async function fetchUnitAsetDashboard(
     id: a.id,
     action: a.action,
     ticket_no: ticketNoById.get(a.ticket_id) ?? "—",
-    actor_name: nameById.get(a.performed_by) ?? "—",
+    actor_name: (a.performed_by && nameById.get(a.performed_by)) || "—",
     timestamp: a.created_at,
   }));
 

@@ -42,7 +42,9 @@ export interface DisposalTicket {
   image_url: string | null;
   cert_url: string | null;
   borang_ca_url: string | null;
-  created_by: string;
+  // Nullable since migration 008: a hard-deleted user's tickets survive with
+  // no owner rather than blocking the delete.
+  created_by: string | null;
   reviewed_by: string | null;
   completed_by: string | null;
   created_at: string;
@@ -57,6 +59,7 @@ export interface AuditLog {
   action: string;
   old_value: string | null;
   new_value: string;
-  performed_by: string;
+  // Nullable since migration 008 — same reason as created_by above.
+  performed_by: string | null;
   created_at: string;
 }

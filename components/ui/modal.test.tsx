@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Modal } from "./modal";
 
@@ -34,5 +34,35 @@ describe("Modal", () => {
     );
     fireEvent.click(screen.getByText("Open"));
     expect(screen.getByText("Pilih tindakan")).toBeInTheDocument();
+  });
+
+  it("opens without a trigger when controlled open is true", () => {
+    render(
+      <Modal open title="Berjaya">
+        <p>Kandungan</p>
+      </Modal>
+    );
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText("Berjaya")).toBeInTheDocument();
+  });
+
+  it("stays closed when controlled open is false", () => {
+    render(
+      <Modal open={false} title="Berjaya">
+        <p>Kandungan</p>
+      </Modal>
+    );
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("calls onOpenChange(false) when the close button is clicked", () => {
+    const onOpenChange = vi.fn();
+    render(
+      <Modal open onOpenChange={onOpenChange} title="Berjaya">
+        <p>Kandungan</p>
+      </Modal>
+    );
+    fireEvent.click(screen.getByRole("button", { name: /tutup/i }));
+    expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 });
