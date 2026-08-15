@@ -8,6 +8,7 @@ import {
   blockOnDelete,
   DELETE_BLOCK_MESSAGE,
 } from "@/lib/users";
+import { isValidPassword, PASSWORD_ERROR } from "@/lib/password";
 import type { Profile, UserRole } from "@/lib/supabase/types";
 
 const VALID_ROLES: UserRole[] = ["user", "unit_aset", "admin"];
@@ -76,7 +77,7 @@ export async function PATCH(
     return NextResponse.json({ error: "Format data tidak sah." }, { status: 400 });
   }
 
-  const { full_name, role, unit_name, is_active } = body;
+  const { full_name, role, unit_name, is_active, password } = body;
 
   if (!full_name || !String(full_name).trim()) {
     return NextResponse.json({ error: "Nama penuh diperlukan." }, { status: 400 });
@@ -88,6 +89,16 @@ export async function PATCH(
 
   if (typeof is_active !== "boolean") {
     return NextResponse.json({ error: "Status akaun tidak sah." }, { status: 400 });
+  }
+
+  // Optional: absent or empty means "not changing it", so the ordinary edit
+  // flow is unaffected. Present means it must clear the same bar as
+  // registration — a reset must not be a back door to a weaker password.
+  const newPassword =
+    typeof password === "string" && password.length > 0 ? password : null;
+
+  if (newPassword && !isValidPassword(newPassword)) {
+    return NextResponse.json({ error: PASSWORD_ERROR }, { status: 400 });
   }
 
   const supabaseAdmin = createClient(
@@ -141,6 +152,27 @@ export async function PATCH(
       { error: "Gagal mengemaskini profil pengguna." },
       { status: 400 },
     );
+  }
+
+  // 4b. Reset the password, if one was supplied. Ordering is profile, then
+  //     password, then ban — each step reports its own partial failure rather
+  //     than letting a later success paper over it.
+  if (newPassword) {
+    const { error: passwordError } = await supabaseAdmin.auth.admin.updateUserById(
+      targetId,
+      { password: newPassword },
+    );
+
+    if (passwordError) {
+      console.error("Password reset error:", passwordError.message);
+      return NextResponse.json(
+        {
+          error:
+            "Profil dikemaskini, tetapi kata laluan gagal ditetapkan semula. Sila cuba semula.",
+        },
+        { status: 502 },
+      );
+    }
   }
 
   // 5. Ban or unban the auth account. The profile flag gates RLS; this is
