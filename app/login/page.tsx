@@ -142,10 +142,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-footnote text-[var(--fg-muted)]">
-          Masalah log masuk?{" "}
-          <a href="tel:+60312345678" className="text-[var(--primary)] font-medium hover:underline">
-            Hubungi Unit Aset
-          </a>
+          Masalah log masuk? Hubungi Unit Aset 09-6971200 (sambungan 1118)
         </p>
       </div>
     </main>
