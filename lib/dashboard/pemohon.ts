@@ -206,12 +206,12 @@ export async function fetchPemohonDashboard(
         .gte("created_at", since24h)
         .order("created_at", { ascending: false })
         .limit(8)
-    : { data: [] as Array<{ id: string; action: string; ticket_id: string; performed_by: string; created_at: string }> };
+    : { data: [] as Array<{ id: string; action: string; ticket_id: string; performed_by: string | null; created_at: string }> };
   const audit = (auditQueryResult.data ?? []) as Array<{
     id: string;
     action: string;
     ticket_id: string;
-    performed_by: string;
+    performed_by: string | null;
     created_at: string;
   }>;
 
@@ -342,7 +342,11 @@ export async function fetchPemohonDashboard(
   );
 
   // ─── activityFeed (look up actor names for the audit entries) ──────
-  const performerIds = Array.from(new Set(audit.map((a) => a.performed_by)));
+  // Drop null actors (owner hard-deleted, migration 008) before this reaches
+  // .in("id", …) on a UUID column — one null breaks the lookup for every row.
+  const performerIds = Array.from(
+    new Set(audit.map((a) => a.performed_by).filter((id): id is string => id !== null)),
+  );
   const ticketLookup = new Map(allTickets60d.map((t) => [t.id, t.ticket_no]));
 
   const profilesResult = performerIds.length
@@ -359,7 +363,7 @@ export async function fetchPemohonDashboard(
     id: a.id,
     action: a.action,
     ticket_no: ticketLookup.get(a.ticket_id) ?? "—",
-    actor_name: nameById.get(a.performed_by) ?? "—",
+    actor_name: (a.performed_by && nameById.get(a.performed_by)) || "—",
     timestamp: a.created_at,
   }));
 
