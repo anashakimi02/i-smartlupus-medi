@@ -208,34 +208,47 @@ Near the other `useState` declarations at the top of the component:
 
 - [ ] **Step 2: Replace the toast and move the redirect**
 
-At `app/(protected)/mohon/page.tsx:188-189`, currently:
+At `app/(protected)/mohon/page.tsx:188-190`, currently **three** lines:
 
 ```tsx
       toast.success(`Permohonan ${ticket.ticket_no} berjaya dihantar!`);
       router.push("/status");
+      router.refresh();
 ```
 
-Replace with:
+Replace all three with:
 
 ```tsx
       setSubmittedTicketNo(ticket.ticket_no);
 ```
 
-The redirect leaves the submit path entirely — it now runs when the modal is dismissed, so the applicant cannot navigate past the SLA without acknowledging it.
+`router.refresh()` must move too, not just `push` — leaving it behind would refetch the current page's server components while the modal is open. Both calls now run on dismissal, so the applicant cannot navigate past the SLA without acknowledging it.
 
 Leave the two partial-failure toasts at `:166` and `:184` alone. The ticket did submit; those warn about an attachment and are not the confirmation.
 
 - [ ] **Step 3: Render the modal**
 
-Add to the component's returned JSX, as a sibling of the form (anywhere inside the top-level wrapper):
+The component's JSX root is `<div className="space-y-6 animate-in">`, wrapping a `<header>` and the form card. Add the modal as the **last child of that root div**, immediately before its closing `</div>`. Radix portals the content to `document.body` and `Dialog.Root` renders nothing itself while closed, so it contributes no layout to the `space-y-6` stack.
+
+First add a single dismissal handler beside the other functions, so OK, the X and Escape cannot drift apart:
+
+```tsx
+  // Any dismissal — OK, the X, or Escape — means the applicant has seen it.
+  // Only ever go forward. Mirrors the push+refresh pair the submit path used
+  // to run inline.
+  function leaveToStatus() {
+    router.push("/status");
+    router.refresh();
+  }
+```
+
+Then the modal:
 
 ```tsx
       <Modal
         open={submittedTicketNo !== null}
         onOpenChange={(next) => {
-          // Any dismissal — OK, the X, or Escape — means the applicant has
-          // seen it. Only ever go forward.
-          if (!next) router.push("/status");
+          if (!next) leaveToStatus();
         }}
         title="Permohonan Berjaya Dihantar"
       >
@@ -249,14 +262,14 @@ Add to the component's returned JSX, as a sibling of the form (anywhere inside t
           <p className="text-footnote text-[var(--fg-muted)]">
             No. Rujukan: <span className="font-semibold text-[var(--fg)]">{submittedTicketNo}</span>
           </p>
-          <Button className="w-full" onClick={() => router.push("/status")}>
+          <Button className="w-full" onClick={leaveToStatus}>
             OK
           </Button>
         </div>
       </Modal>
 ```
 
-Add the import if it is not already present:
+Add the import — `Modal` is **not** currently imported in this file (`useState`, `useRouter`, `Button` and `toast` all are):
 
 ```tsx
 import { Modal } from "@/components/ui/modal";
